@@ -56,5 +56,11 @@ namespace EmailAppBackend.Controllers
             var user = await _authService.GetUserByEmailAsync(dto.Email);
             return Ok(new { token, userId = user?.Id, email = user?.Email, firstName = user?.FirstName, lastName = user?.LastName });
         }
+
+        [HttpGet("login")]
+        public IActionResult LoginGet()
+        {
+            return Ok(new { message = "Auth API is running. Use POST to login." });
+        }
     }
 }
