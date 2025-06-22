@@ -2,13 +2,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy csproj and restore as distinct layers
-COPY EmailAppBackend/EmailAppBackend.csproj ./EmailAppBackend/
-WORKDIR /src/EmailAppBackend
-RUN dotnet restore EmailAppBackend.csproj
+# Copy everything for restore and build
+COPY EmailAppBackend/ ./EmailAppBackend/        
 
-# Copy the rest of the source code
-COPY EmailAppBackend/. .
+WORKDIR /src/EmailAppBackend
+RUN dotnet restore
 
 # Build and publish the app
 RUN dotnet publish EmailAppBackend.csproj -c Release -o /app/publish --no-restore
