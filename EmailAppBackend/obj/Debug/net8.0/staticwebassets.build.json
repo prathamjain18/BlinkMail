@@ -1,0 +1,20 @@
+{
+  "Version": 1,
+  "Hash": "Xk8/Ea9h4X6PpageyNvQeqkwSRhsx3MZt26SkTgAqmI=",
+  "Source": "EmailAppBackend",
+  "BasePath": "_content/EmailAppBackend",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "EmailAppBackend\\wwwroot",
+      "Source": "EmailAppBackend",
+      "ContentRoot": "C:\\Users\\AVuser\\Desktop\\BlinkMail\\BlinkMail\\EmailAppBackend\\wwwroot\\",
+      "BasePath": "_content/EmailAppBackend",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [],
+  "Endpoints": []
+}

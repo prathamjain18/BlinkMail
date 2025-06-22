@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background font-sans text-text-light transition-colors duration-300;
+  }
+  .dark body {
+    @apply bg-background-dark text-text-dark;
+  }
+  .card {
+    @apply bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark text-text-light dark:text-text-dark shadow rounded-lg;
+  }
+  .input {
+    @apply bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark text-text-light dark:text-text-dark placeholder-text-secondary-light dark:placeholder-text-secondary-dark;
+  }
+} 
