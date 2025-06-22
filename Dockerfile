@@ -3,12 +3,12 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy csproj and restore as distinct layers
-COPY BlinkMail/EmailAppBackend/EmailAppBackend.csproj ./BlinkMail/EmailAppBackend/
-WORKDIR /src/BlinkMail/EmailAppBackend
+COPY EmailAppBackend/EmailAppBackend.csproj ./EmailAppBackend/
+WORKDIR /src/EmailAppBackend
 RUN dotnet restore EmailAppBackend.csproj
 
 # Copy the rest of the source code
-COPY . .
+COPY EmailAppBackend/. .
 
 # Build and publish the app
 RUN dotnet publish EmailAppBackend.csproj -c Release -o /app/publish --no-restore
