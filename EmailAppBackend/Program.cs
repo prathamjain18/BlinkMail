@@ -76,9 +76,19 @@ using (var scope = app.Services.CreateScope())
 // Configure static files for attachments
 app.UseStaticFiles();
 
-app.UseHttpsRedirection();
+// Only use HTTPS redirection in development
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// Ensure the app listens on the port provided by Railway or default to 8080
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Urls.Add($"http://*:{port}");
+
 app.Run();
