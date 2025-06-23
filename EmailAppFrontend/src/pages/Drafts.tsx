@@ -61,14 +61,14 @@ const Drafts = () => {
   };
 
   // Handles editing a draft
-  const handleEdit = async (email: Email) => {
-    try {
-      await api.put(`/email/${email.id}`, email);
-      navigate(`/compose?id=${email.id}`);
-    } catch (error) {
-      console.error('Error updating email:', error);
-    }
-  };
+  // const handleEdit = async (email: Email) => {
+  //   try {
+  //     await api.put(`/email/${email.id}`, email);
+  //     navigate(`/compose?id=${email.id}`);
+  //   } catch (error) {
+  //     console.error('Error updating email:', error);
+  //   }
+  // };
 
   return (
     <div className="h-full flex">
