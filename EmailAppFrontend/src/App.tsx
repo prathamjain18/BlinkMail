@@ -8,23 +8,48 @@ import Sent from './pages/Sent';
 import Compose from './pages/Compose';
 import Layout from './components/Layout';
 import Drafts from './pages/Drafts';
+import api from './utils/axios';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   // State to track if the user is authenticated
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
 
-  // On mount, check for authentication token in localStorage
-  useEffect(() => {
+  // Check authentication status
+  const checkAuthStatus = useCallback(() => {
     const token = localStorage.getItem('token');
     if (token) {
+      // Assume token is valid for initial render, validation can happen in background
       setIsAuthenticated(true);
+      // Optional: Background validation
+      api.get('/auth/validate-token').catch(() => {
+        // Token is invalid, clear it
+        localStorage.clear();
+        setIsAuthenticated(false);
+      });
+    } else {
+      setIsAuthenticated(false);
     }
   }, []);
 
-  // Handles user logout by clearing token and updating state
-  const handleLogout = useCallback(() => {
-    localStorage.removeItem('token');
-    setIsAuthenticated(false);
+  // On mount, check for authentication token
+  useEffect(() => {
+    checkAuthStatus();
+  }, [checkAuthStatus]);
+
+  // Listen for storage changes to handle logout from other tabs
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'token' && e.newValue === null) {
+        setIsAuthenticated(false);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   return (
@@ -33,67 +58,21 @@ function App() {
         {/* Public routes */}
         <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
         <Route path="/register" element={<Register setIsAuthenticated={setIsAuthenticated} />} />
-        {/* Protected routes: Only accessible if authenticated */}
-        <Route
-          path="/"
-          element={
-            isAuthenticated ? (
-              <Layout onLogout={handleLogout}>
-                <Dashboard />
-              </Layout>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="/inbox"
-          element={
-            isAuthenticated ? (
-              <Layout onLogout={handleLogout}>
-                <Inbox />
-              </Layout>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="/sent"
-          element={
-            isAuthenticated ? (
-              <Layout onLogout={handleLogout}>
-                <Sent />
-              </Layout>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="/compose"
-          element={
-            isAuthenticated ? (
-              <Layout onLogout={handleLogout}>
-                <Compose />
-              </Layout>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="/drafts"
-          element={
-            isAuthenticated ? (
-              <Layout onLogout={handleLogout}>
-                <Drafts />
-              </Layout>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
+
+        {/* Protected routes */}
+        <Route element={<Layout />}>
+          <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
+            <Route path="/" element={<Navigate to="/inbox" replace />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/inbox" element={<Inbox />} />
+            <Route path="/sent" element={<Sent />} />
+            <Route path="/compose" element={<Compose />} />
+            <Route path="/drafts" element={<Drafts />} />
+          </Route>
+        </Route>
+
+        {/* Fallback route */}
+        <Route path="*" element={<Navigate to={isAuthenticated ? '/inbox' : '/login'} replace />} />
       </Routes>
     </Router>
   );

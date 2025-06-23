@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../utils/axios';
 import { Link } from 'react-router-dom';
 import { TrashIcon, ArrowUturnLeftIcon } from '@heroicons/react/24/outline';
 
@@ -31,13 +31,10 @@ const Sent = () => {
   // Fetches sent emails from the backend
   const fetchEmails = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/email/sent', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get('/email/sent');
       setEmails(response.data);
     } catch (error) {
-      console.error('Error fetching sent emails:', error);
+      console.error('Error fetching emails:', error);
     } finally {
       setLoading(false);
     }
@@ -51,10 +48,7 @@ const Sent = () => {
   // Handles deleting an email
   const handleDelete = async (id: number) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`/api/email/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.delete(`/email/${id}`);
       setEmails((prevEmails) => prevEmails.filter((email) => email.id !== id));
       if (selectedEmail?.id === id) {
         setSelectedEmail(null);

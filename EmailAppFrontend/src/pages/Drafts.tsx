@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import api from '../utils/axios';
 import { Link } from 'react-router-dom';
 import { PencilSquareIcon, TrashIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 
@@ -22,22 +23,20 @@ const Drafts = () => {
   const [loading, setLoading] = useState(true);
   // State for the currently selected draft
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
+  const navigate = useNavigate();
 
   // Fetch draft emails on component mount
   useEffect(() => {
-    fetchDrafts();
+    fetchEmails();
   }, []);
 
   // Fetches draft emails from the backend
-  const fetchDrafts = async () => {
+  const fetchEmails = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/email/drafts', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get('/email/drafts');
       setEmails(response.data);
     } catch (error) {
-      console.error('Error fetching drafts:', error);
+      console.error('Error fetching emails:', error);
     } finally {
       setLoading(false);
     }
@@ -51,16 +50,23 @@ const Drafts = () => {
   // Handles deleting a draft
   const handleDelete = async (id: number) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`/api/email/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.delete(`/email/${id}`);
       setEmails((prevEmails) => prevEmails.filter((email) => email.id !== id));
       if (selectedEmail?.id === id) {
         setSelectedEmail(null);
       }
     } catch (error) {
-      console.error('Error deleting draft:', error);
+      console.error('Error deleting email:', error);
+    }
+  };
+
+  // Handles editing a draft
+  const handleEdit = async (email: Email) => {
+    try {
+      await api.put(`/email/${email.id}`, email);
+      navigate(`/compose?id=${email.id}`);
+    } catch (error) {
+      console.error('Error updating email:', error);
     }
   };
 
@@ -138,15 +144,30 @@ const Drafts = () => {
                 </button>
                 <button
                   onClick={async () => {
+                    if (!selectedEmail) return;
+
+                    const recipient = selectedEmail.recipientEmail || selectedEmail.recipient?.email;
+                    if (!recipient) {
+                      alert('Recipient email is required to send.');
+                      return;
+                    }
+
                     try {
-                      const token = localStorage.getItem('token');
-                      await axios.put(
-                        `/api/email/${selectedEmail.id}`,
-                        { ...selectedEmail, id: selectedEmail.id, isDraft: false },
-                        { headers: { Authorization: `Bearer ${token}` } }
+                      const userId = localStorage.getItem('userId');
+                      await api.put(
+                        `/email/${selectedEmail.id}`,
+                        {
+                          id: selectedEmail.id,
+                          subject: selectedEmail.subject,
+                          body: selectedEmail.body,
+                          senderId: parseInt(userId || '0'),
+                          recipientEmail: recipient,
+                          isDraft: false,
+                        },
                       );
-                      window.location.href = '/sent';
+                      navigate('/sent');
                     } catch (err) {
+                      console.error('Failed to send draft:', err);
                       alert('Failed to send draft.');
                     }
                   }}
@@ -156,6 +177,10 @@ const Drafts = () => {
                   <PaperAirplaneIcon className="h-5 w-5" /> Send
                 </button>
               </div>
+            </div>
+            {/* Email Body */}
+            <div className="mt-6 prose prose-sm max-w-none text-text-light dark:text-text-dark">
+              <p>{selectedEmail.body}</p>
             </div>
           </div>
         ) : (

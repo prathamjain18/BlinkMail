@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
+import api from '../utils/axios';
 import { InboxIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 
 // Email interface for type safety
@@ -9,7 +9,7 @@ interface Email {
   subject: string;
   sender: string;
   recipient: string;
-  content: string;
+  body: string;
   timestamp: string;
   isRead: boolean;
 }
@@ -24,10 +24,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchRecentEmails = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('/api/email/inbox', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await api.get('/email/inbox');
         setRecentEmails(response.data.slice(0, 5)); // Show only the 5 most recent emails
       } catch (error) {
         console.error('Error fetching emails:', error);

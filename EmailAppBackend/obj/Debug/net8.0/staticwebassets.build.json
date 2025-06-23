@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Xk8/Ea9h4X6PpageyNvQeqkwSRhsx3MZt26SkTgAqmI=",
+  "Hash": "mN9bPGtDZyzpODbQ3FKDB32QVAs8erZEnmTl+KBssG4=",
   "Source": "EmailAppBackend",
   "BasePath": "_content/EmailAppBackend",
   "Mode": "Default",
@@ -10,7 +10,7 @@
     {
       "Name": "EmailAppBackend\\wwwroot",
       "Source": "EmailAppBackend",
-      "ContentRoot": "C:\\Users\\AVuser\\Desktop\\BlinkMail\\BlinkMail\\EmailAppBackend\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\AVuser\\Desktop\\BlinkMail\\EmailAppBackend\\wwwroot\\",
       "BasePath": "_content/EmailAppBackend",
       "Pattern": "**"
     }

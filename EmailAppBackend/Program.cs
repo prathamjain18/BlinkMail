@@ -44,6 +44,8 @@ builder.Services.AddAuthentication("Bearer")
             ValidateIssuer = false,
             ValidateAudience = false,
             ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero,
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key not found in configuration"))
             )

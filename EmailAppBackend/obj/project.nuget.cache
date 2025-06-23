@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "/MzUTIN0fsQ=",
+  "dgSpecHash": "saICi2F3gRQ=",
   "success": true,
-  "projectFilePath": "C:\\Users\\AVuser\\Desktop\\BlinkMail\\BlinkMail\\EmailAppBackend\\EmailAppBackend.csproj",
+  "projectFilePath": "C:\\Users\\AVuser\\Desktop\\BlinkMail\\EmailAppBackend\\EmailAppBackend.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\AVuser\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\AVuser\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",

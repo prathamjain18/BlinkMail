@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../utils/axios';
 import { Link } from 'react-router-dom';
 import { TrashIcon, ArrowUturnLeftIcon } from '@heroicons/react/24/outline';
 
@@ -9,7 +9,7 @@ interface Email {
   subject: string;
   sender: string;
   recipient: string;
-  content: string;
+  body: string;
   timestamp: string;
   isRead: boolean;
   recipientEmail?: string;
@@ -31,10 +31,7 @@ const Inbox = () => {
   // Fetches inbox emails from the backend
   const fetchEmails = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/email/inbox', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get('/email/inbox');
       setEmails(response.data);
     } catch (error) {
       console.error('Error fetching emails:', error);
@@ -48,14 +45,7 @@ const Inbox = () => {
     setSelectedEmail(email);
     if (!email.isRead) {
       try {
-        const token = localStorage.getItem('token');
-        await axios.put(
-          `/api/email/${email.id}/read`,
-          {},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        await api.put(`/email/${email.id}/read`, {});
         setEmails((prevEmails) =>
           prevEmails.map((e) => (e.id === email.id ? { ...e, isRead: true } : e))
         );
@@ -68,10 +58,7 @@ const Inbox = () => {
   // Handles deleting an email
   const handleDelete = async (id: number) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`/api/email/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.delete(`/email/${id}`);
       setEmails((prevEmails) => prevEmails.filter((email) => email.id !== id));
       if (selectedEmail?.id === id) {
         setSelectedEmail(null);
@@ -144,7 +131,7 @@ const Inbox = () => {
                   <TrashIcon className="h-5 w-5" /> Delete
                 </button>
                 <Link
-                  to={`/compose?replyTo=${encodeURIComponent(selectedEmail.sender)}&subject=${encodeURIComponent('Re: ' + selectedEmail.subject)}&body=${encodeURIComponent('\n\n--- Original Message ---\n' + selectedEmail.content)}`}
+                  to={`/compose?replyTo=${encodeURIComponent(selectedEmail.sender)}&subject=${encodeURIComponent('Re: ' + selectedEmail.subject)}&body=${encodeURIComponent('\n\n--- Original Message ---\n' + selectedEmail.body)}`}
                   className="inline-flex items-center gap-1 px-3 py-2 rounded-md bg-primary text-white hover:bg-primary-light dark:bg-primary-dark dark:hover:bg-primary focus:outline-none focus:ring-2 focus:ring-primary text-sm font-medium shadow transition-colors"
                   title="Reply to this email"
                 >
@@ -153,7 +140,7 @@ const Inbox = () => {
               </div>
             </div>
             <div className="prose max-w-none">
-              <p className="whitespace-pre-wrap">{selectedEmail.content}</p>
+              <p className="whitespace-pre-wrap">{selectedEmail.body}</p>
             </div>
           </div>
         ) : (

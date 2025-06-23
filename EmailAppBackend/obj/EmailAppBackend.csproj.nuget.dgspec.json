@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\AVuser\\Desktop\\BlinkMail\\BlinkMail\\EmailAppBackend\\EmailAppBackend.csproj": {}
+    "C:\\Users\\AVuser\\Desktop\\BlinkMail\\EmailAppBackend\\EmailAppBackend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\AVuser\\Desktop\\BlinkMail\\BlinkMail\\EmailAppBackend\\EmailAppBackend.csproj": {
+    "C:\\Users\\AVuser\\Desktop\\BlinkMail\\EmailAppBackend\\EmailAppBackend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\AVuser\\Desktop\\BlinkMail\\BlinkMail\\EmailAppBackend\\EmailAppBackend.csproj",
+        "projectUniqueName": "C:\\Users\\AVuser\\Desktop\\BlinkMail\\EmailAppBackend\\EmailAppBackend.csproj",
         "projectName": "EmailAppBackend",
-        "projectPath": "C:\\Users\\AVuser\\Desktop\\BlinkMail\\BlinkMail\\EmailAppBackend\\EmailAppBackend.csproj",
+        "projectPath": "C:\\Users\\AVuser\\Desktop\\BlinkMail\\EmailAppBackend\\EmailAppBackend.csproj",
         "packagesPath": "C:\\Users\\AVuser\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\AVuser\\Desktop\\BlinkMail\\BlinkMail\\EmailAppBackend\\obj\\",
+        "outputPath": "C:\\Users\\AVuser\\Desktop\\BlinkMail\\EmailAppBackend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\AVuser\\AppData\\Roaming\\NuGet\\NuGet.Config"

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/axios';
 import { PaperAirplaneIcon, DocumentDuplicateIcon } from '@heroicons/react/24/outline';
 
 const Compose = () => {
@@ -22,10 +22,7 @@ const Compose = () => {
   // Fetches a draft by ID and populates the form
   const fetchDraft = async (id: number) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`/api/email/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get(`/email/${id}`);
       const draft = response.data;
       setFormData({
         recipient: draft.recipientEmail || draft.recipient?.email || '',
@@ -70,7 +67,6 @@ const Compose = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
       const userId = localStorage.getItem('userId');
       
       const emailData = {
@@ -83,22 +79,10 @@ const Compose = () => {
 
       if (draftId) {
         // Update existing draft and send
-        await axios.put(
-          `/api/email/${draftId}`,
-          { ...emailData, id: draftId },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        await api.put(`/email/${draftId}`, { ...emailData, id: draftId });
       } else {
         // Send new email
-        await axios.post(
-          '/api/email/send',
-          emailData,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        await api.post('/email/send', emailData);
       }
       navigate('/sent');
     } catch (err: any) {
@@ -125,7 +109,6 @@ const Compose = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
       const userId = localStorage.getItem('userId');
 
       const draftData = {
@@ -138,22 +121,10 @@ const Compose = () => {
 
       if (draftId) {
         // Update existing draft
-        await axios.put(
-          `/api/email/${draftId}`,
-          draftData,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        await api.put(`/email/${draftId}`, draftData);
       } else {
         // Save new draft
-        await axios.post(
-          '/api/email/draft',
-          draftData,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        await api.post('/email/draft', draftData);
       }
       navigate('/drafts');
     } catch (err: any) {

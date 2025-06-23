@@ -128,6 +128,19 @@ public class EmailService : IEmailService
             existingEmail.SentAt = DateTime.UtcNow; // Update the SentAt property to reflect the last modification time for drafts
         }
 
+        if (!existingEmail.IsDraft && existingEmail.RecipientId == null && !string.IsNullOrEmpty(existingEmail.RecipientEmail))
+        {
+            var recipient = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == existingEmail.RecipientEmail.ToLower());
+            if (recipient != null)
+            {
+                existingEmail.RecipientId = recipient.Id;
+            }
+            else
+            {
+                throw new Exception("Recipient not found when sending draft.");
+            }
+        }
+
         await _context.SaveChangesAsync();
         return existingEmail;
     }

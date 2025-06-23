@@ -16,6 +16,22 @@ namespace EmailAppBackend.Controllers
             _authService = authService;
         }
 
+        [HttpGet("validate-token")]
+        // Validates if the current token is valid (requires authentication)
+        [Microsoft.AspNetCore.Authorization.Authorize]
+        public IActionResult ValidateToken()
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var email = User.FindFirst("email")?.Value;
+            
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(email))
+            {
+                return Unauthorized();
+            }
+            
+            return Ok(new { userId, email });
+        }
+
         [HttpGet("user-by-email")]
         // Retrieves user information by email address
         public async Task<IActionResult> GetUserByEmail([FromQuery] string email)

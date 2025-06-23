@@ -45,6 +45,21 @@ export default {
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
+      keyframes: {
+        'fade-in': {
+          '0%': { opacity: '0', transform: 'scale(0.98)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        shake: {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-8px)' },
+          '20%, 40%, 60%, 80%': { transform: 'translateX(8px)' },
+        },
+      },
+      animation: {
+        'fade-in': 'fade-in 0.5s cubic-bezier(0.4,0,0.2,1) both',
+        shake: 'shake 0.5s cubic-bezier(0.4,0,0.2,1)',
+      },
     },
   },
   plugins: [

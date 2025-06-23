@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import api from '../utils/axios';
+import { EyeIcon, EyeSlashIcon, ExclamationCircleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
 interface LoginProps {
   setIsAuthenticated: (value: boolean) => void;
@@ -18,12 +18,18 @@ const Login = ({ setIsAuthenticated }: LoginProps) => {
   const [error, setError] = useState('');
   // State to toggle password visibility
   const [showPassword, setShowPassword] = useState(false);
+  // State for loading spinner
+  const [loading, setLoading] = useState(false);
+  // State for shake animation on error
+  const [shake, setShake] = useState(false);
 
   // Handles form submission for login
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
     try {
-      const response = await axios.post('/api/auth/login', formData);
+      const response = await api.post('/auth/login', formData);
       // Store authentication details in localStorage
       localStorage.setItem('token', response.data.token);
       if (response.data.userId) localStorage.setItem('userId', response.data.userId);
@@ -34,6 +40,10 @@ const Login = ({ setIsAuthenticated }: LoginProps) => {
       navigate('/');
     } catch (err) {
       setError('Invalid email or password');
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,17 +56,19 @@ const Login = ({ setIsAuthenticated }: LoginProps) => {
           <circle cx="100" cy="500" r="100" fill="#fbbf24" />
         </svg>
       </div>
-      <div className="relative z-10 max-w-md w-full mx-auto animate-fade-in">
+      <div className={`relative z-10 max-w-md w-full mx-auto animate-fade-in ${shake ? 'animate-shake' : ''}`}>
         <div className="flex flex-col items-center mb-6">
           <span className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-primary text-white shadow-lg mb-2">
             <svg className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12H8m8 0a8 8 0 11-16 0 8 8 0 0116 0z" /></svg>
           </span>
+          <h1 className="text-2xl font-bold text-primary mb-1 tracking-tight">BlinkMail</h1>
           <h2 className="text-3xl font-extrabold text-text-light dark:text-text-dark">Welcome Back</h2>
           <p className="text-text-secondary-light dark:text-text-secondary-dark mt-1">Sign in to your account</p>
         </div>
-        <form className="bg-white dark:bg-gray-900 shadow-xl rounded-xl px-8 py-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="bg-white dark:bg-gray-900 shadow-xl rounded-xl px-8 py-8 space-y-6 transition-transform duration-300" onSubmit={handleSubmit}>
           {error && (
-            <div className="rounded-md bg-red-50 dark:bg-red-900 p-4 mb-2">
+            <div className="rounded-md bg-red-50 dark:bg-red-900 p-4 mb-2 flex items-center gap-2 animate-fade-in">
+              <ExclamationCircleIcon className="h-5 w-5 text-red-500 dark:text-red-300" />
               <div className="text-sm text-red-700 dark:text-red-200">{error}</div>
             </div>
           )}
@@ -70,7 +82,7 @@ const Login = ({ setIsAuthenticated }: LoginProps) => {
                 name="email"
                 type="email"
                 required
-                className="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-background dark:bg-gray-800 text-text-light dark:text-text-dark shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+                className="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-background dark:bg-gray-800 text-text-light dark:text-text-dark shadow-sm focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none sm:text-sm transition-all duration-200 hover:border-primary"
                 placeholder="Email address"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -85,7 +97,7 @@ const Login = ({ setIsAuthenticated }: LoginProps) => {
                 name="password"
                 type={showPassword ? 'text' : 'password'}
                 required
-                className="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-background dark:bg-gray-800 text-text-light dark:text-text-dark shadow-sm focus:border-primary focus:ring-primary sm:text-sm pr-10"
+                className="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-background dark:bg-gray-800 text-text-light dark:text-text-dark shadow-sm focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none sm:text-sm pr-10 transition-all duration-200 hover:border-primary"
                 placeholder="Password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -101,12 +113,19 @@ const Login = ({ setIsAuthenticated }: LoginProps) => {
                 {showPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
               </button>
             </div>
+            <div className="flex justify-end">
+              <Link to="/forgot-password" className="text-xs text-primary hover:text-primary-light transition-colors">Forgot password?</Link>
+            </div>
           </div>
           <button
             type="submit"
-            className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
+            className={`w-full flex justify-center items-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+            disabled={loading}
           >
-            Sign in
+            {loading ? (
+              <ArrowPathIcon className="h-5 w-5 mr-2 animate-spin" />
+            ) : null}
+            {loading ? 'Signing in...' : 'Sign in'}
           </button>
           <div className="text-sm text-center mt-2">
             <Link to="/register" className="font-medium text-primary hover:text-primary-light">
