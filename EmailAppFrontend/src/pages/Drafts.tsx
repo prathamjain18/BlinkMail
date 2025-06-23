@@ -79,7 +79,7 @@ const Drafts = () => {
         </div>
         {loading ? (
           <div className="p-4 text-center">Loading...</div>
-        ) : emails.length > 0 ? (
+        ) : Array.isArray(emails) && emails.length > 0 ? (
           <ul className="divide-y divide-gray-200">
             {emails.map((email) => (
               <li
@@ -107,8 +107,10 @@ const Drafts = () => {
               </li>
             ))}
           </ul>
+        ) : !Array.isArray(emails) ? (
+          <div className="p-4 text-center text-red-500">Error: Could not load drafts. Please try again or contact support.</div>
         ) : (
-          <div className="p-4 text-center text-text-secondary-light dark:text-text-secondary-dark">No drafts</div>
+          <div className="p-4 text-center">No drafts found.</div>
         )}
       </div>
 

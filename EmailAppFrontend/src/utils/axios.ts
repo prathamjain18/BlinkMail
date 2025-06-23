@@ -42,4 +42,18 @@ api.interceptors.response.use(
   }
 );
 
+// Add a response interceptor for debugging
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      // Log error details for debugging
+      console.error('API Error:', error.response.status, error.response.data);
+    } else {
+      console.error('API Error:', error.message);
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api; 
