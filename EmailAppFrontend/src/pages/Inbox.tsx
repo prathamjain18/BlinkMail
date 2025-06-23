@@ -77,7 +77,7 @@ const Inbox = () => {
         </div>
         {loading ? (
           <div className="p-4 text-center">Loading...</div>
-        ) : emails.length > 0 ? (
+        ) : Array.isArray(emails) && emails.length > 0 ? (
           <ul className="divide-y divide-border-light dark:divide-border-dark">
             {emails.map((email) => (
               <li

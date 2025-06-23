@@ -75,7 +75,7 @@ const Dashboard = () => {
         <div>
           {loading ? (
             <div className="px-4 py-5 sm:px-6 text-center">Loading...</div>
-          ) : recentEmails.length > 0 ? (
+          ) : Array.isArray(recentEmails) && recentEmails.length > 0 ? (
             <ul className="divide-y divide-border-light dark:divide-border-dark">
               {recentEmails.map((email) => (
                 <li key={email.id} className="px-4 py-4 sm:px-6">

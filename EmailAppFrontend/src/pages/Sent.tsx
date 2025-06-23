@@ -67,7 +67,7 @@ const Sent = () => {
         </div>
         {loading ? (
           <div className="p-4 text-center">Loading...</div>
-        ) : emails.length > 0 ? (
+        ) : Array.isArray(emails) && emails.length > 0 ? (
           <ul className="divide-y divide-gray-200">
             {emails.map((email) => (
               <li
