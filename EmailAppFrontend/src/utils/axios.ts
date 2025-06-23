@@ -2,7 +2,9 @@ import axios from 'axios';
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: process.env.NODE_ENV === 'production'
+    ? 'https://blinkmail-backend.onrender.com/api'
+    : '/api',
   headers: {
     'Content-Type': 'application/json',
   },
