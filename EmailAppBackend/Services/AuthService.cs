@@ -62,7 +62,18 @@ namespace EmailAppBackend.Services
             if (string.IsNullOrEmpty(dto.Password)) throw new ArgumentException("Password is required", nameof(dto));
 
             var normalizedEmail = dto.Email.Trim().ToLower();
+            Console.WriteLine($"[LOGIN] Attempting login for: '{normalizedEmail}'");
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail);
+            if (user == null)
+            {
+                Console.WriteLine($"[LOGIN] User not found for email: '{normalizedEmail}'");
+            }
+            else
+            {
+                Console.WriteLine($"[LOGIN] User found. Checking password for: '{normalizedEmail}'");
+                var passwordMatch = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
+                Console.WriteLine($"[LOGIN] Password match: {passwordMatch}");
+            }
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
                 throw new Exception("Invalid credentials");
 

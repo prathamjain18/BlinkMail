@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EmailAppBackend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+43e989462e81e65abb751d94772d9ea1d70966e2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6d6b1d4f4e86c4b11e61dd87e7bf7e932ecb3110")]
 [assembly: System.Reflection.AssemblyProductAttribute("EmailAppBackend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EmailAppBackend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

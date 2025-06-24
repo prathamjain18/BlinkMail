@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using EmailAppBackend.Services;
 using EmailAppBackend.Data;
+using BCrypt.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,6 +65,51 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine("Attempting to connect to database...");
         context.Database.EnsureCreated();
         Console.WriteLine("Database connection successful!");
+
+        // --- DEMO USER SEEDING ---
+        Console.WriteLine("Checking for demo users...");
+        var recruiterEmail = "demo.recruiter@blinkmail.com";
+        var candidateEmail = "demo.candidate@blinkmail.com";
+        var demoPassword = "password123";
+        var recruiter = context.Users.FirstOrDefault(u => u.Email == recruiterEmail);
+        if (recruiter == null)
+        {
+            Console.WriteLine($"Recruiter not found, creating: {recruiterEmail}");
+            context.Users.Add(new EmailAppBackend.Models.User
+            {
+                Email = recruiterEmail,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(demoPassword),
+                FirstName = "Demo",
+                LastName = "Recruiter",
+                CreatedAt = DateTime.UtcNow
+            });
+        }
+        else
+        {
+            Console.WriteLine($"Recruiter already exists: {recruiterEmail}");
+            Console.WriteLine($"Recruiter password hash: {recruiter.PasswordHash}");
+        }
+        var candidate = context.Users.FirstOrDefault(u => u.Email == candidateEmail);
+        if (candidate == null)
+        {
+            Console.WriteLine($"Candidate not found, creating: {candidateEmail}");
+            context.Users.Add(new EmailAppBackend.Models.User
+            {
+                Email = candidateEmail,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(demoPassword),
+                FirstName = "Demo",
+                LastName = "Candidate",
+                CreatedAt = DateTime.UtcNow
+            });
+        }
+        else
+        {
+            Console.WriteLine($"Candidate already exists: {candidateEmail}");
+            Console.WriteLine($"Candidate password hash: {candidate.PasswordHash}");
+        }
+        context.SaveChanges();
+        Console.WriteLine("Demo user seeding complete.");
+        // --- END DEMO USER SEEDING ---
     }
     catch (Exception ex)
     {

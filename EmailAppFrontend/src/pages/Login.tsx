@@ -118,6 +118,60 @@ const Login = ({ setIsAuthenticated }: LoginProps) => {
             </div>
           </div>
           <button
+            type="button"
+            className="w-full flex justify-center items-center py-2 px-4 mb-2 border border-transparent text-sm font-medium rounded-md text-white bg-accent hover:bg-accent-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-colors"
+            onClick={async () => {
+              setFormData({ email: 'demo.recruiter@blinkmail.com', password: 'password123' });
+              setLoading(true);
+              setError('');
+              try {
+                const response = await api.post('/auth/login', { email: 'demo.recruiter@blinkmail.com', password: 'password123' });
+                localStorage.setItem('token', response.data.token);
+                if (response.data.userId) localStorage.setItem('userId', response.data.userId);
+                if (response.data.email) localStorage.setItem('email', response.data.email);
+                if (response.data.firstName) localStorage.setItem('firstName', response.data.firstName);
+                if (response.data.lastName) localStorage.setItem('lastName', response.data.lastName);
+                setIsAuthenticated(true);
+                navigate('/');
+              } catch (err) {
+                setError('Demo recruiter login failed.');
+                setShake(true);
+                setTimeout(() => setShake(false), 500);
+              } finally {
+                setLoading(false);
+              }
+            }}
+          >
+            Login as Demo Recruiter
+          </button>
+          <button
+            type="button"
+            className="w-full flex justify-center items-center py-2 px-4 mb-2 border border-transparent text-sm font-medium rounded-md text-white bg-accent hover:bg-accent-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-colors"
+            onClick={async () => {
+              setFormData({ email: 'demo.candidate@blinkmail.com', password: 'password123' });
+              setLoading(true);
+              setError('');
+              try {
+                const response = await api.post('/auth/login', { email: 'demo.candidate@blinkmail.com', password: 'password123' });
+                localStorage.setItem('token', response.data.token);
+                if (response.data.userId) localStorage.setItem('userId', response.data.userId);
+                if (response.data.email) localStorage.setItem('email', response.data.email);
+                if (response.data.firstName) localStorage.setItem('firstName', response.data.firstName);
+                if (response.data.lastName) localStorage.setItem('lastName', response.data.lastName);
+                setIsAuthenticated(true);
+                navigate('/');
+              } catch (err) {
+                setError('Demo candidate login failed.');
+                setShake(true);
+                setTimeout(() => setShake(false), 500);
+              } finally {
+                setLoading(false);
+              }
+            }}
+          >
+            Login as Demo Candidate
+          </button>
+          <button
             type="submit"
             className={`w-full flex justify-center items-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
             disabled={loading}
