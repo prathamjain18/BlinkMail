@@ -78,10 +78,11 @@ using (var scope = app.Services.CreateScope())
 app.UseStaticFiles();
 
 // Only use HTTPS redirection in development
-if (app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
+// if (app.Environment.IsDevelopment())
+// {
+//     app.UseHttpsRedirection();
+// }
+app.UseHttpsRedirection();
 
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
