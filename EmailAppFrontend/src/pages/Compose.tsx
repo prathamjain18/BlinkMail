@@ -127,7 +127,7 @@ const Compose = () => {
 
       if (draftId) {
         // Update existing draft and send
-        const response = await api.put(`/email/${draftId}`, { ...emailData, id: draftId });
+        await api.put(`/email/${draftId}`, { ...emailData, id: draftId });
         emailId = draftId;
       } else {
         // Send new email
