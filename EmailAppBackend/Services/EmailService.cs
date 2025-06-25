@@ -170,12 +170,7 @@ public class EmailService : IEmailService
         var email = await _context.Emails.FindAsync(emailId);
         if (email == null) return false;
 
-        var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
-        if (!Directory.Exists(uploadsFolder))
-        {
-            Directory.CreateDirectory(uploadsFolder);
-        }
-
+        var uploadsFolder = GetUploadsPath();
         var uniqueFileName = $"{Guid.NewGuid()}_{file.FileName}";
         var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
@@ -203,5 +198,15 @@ public class EmailService : IEmailService
         return await _context.Attachments
             .Include(a => a.Email)
             .FirstOrDefaultAsync(a => a.Id == attachmentId);
+    }
+
+    public string GetUploadsPath()
+    {
+        var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
+        if (!Directory.Exists(uploadsFolder))
+        {
+            Directory.CreateDirectory(uploadsFolder);
+        }
+        return uploadsFolder;
     }
 } 

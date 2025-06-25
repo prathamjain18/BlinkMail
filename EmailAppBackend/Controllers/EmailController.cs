@@ -36,7 +36,16 @@ public class EmailController : ControllerBase
             Recipient = email.Recipient?.Email ?? email.RecipientEmail ?? "",
             RecipientEmail = email.RecipientEmail ?? "",
             Timestamp = email.SentAt.ToString("o"),
-            IsRead = email.IsRead
+            IsRead = email.IsRead,
+            IsHighPriority = email.IsHighPriority,
+            Attachments = email.Attachments?.Select(a => new EmailAppBackend.DTOs.AttachmentDto
+            {
+                Id = a.Id,
+                FileName = a.FileName,
+                ContentType = a.ContentType,
+                FileSize = a.FileSize,
+                UploadedAt = a.UploadedAt.ToString("o")
+            }).ToList() ?? new List<EmailAppBackend.DTOs.AttachmentDto>()
         };
     }
 
@@ -189,6 +198,22 @@ public class EmailController : ControllerBase
             return NotFound();
 
         return Ok(attachment);
+    }
+
+    [HttpGet("attachments/{id}/download")]
+    // Downloads an attachment file
+    public async Task<ActionResult> DownloadAttachment(int id)
+    {
+        var attachment = await _emailService.GetAttachmentAsync(id);
+        if (attachment == null)
+            return NotFound();
+
+        var filePath = Path.Combine(_emailService.GetUploadsPath(), attachment.FilePath);
+        if (!System.IO.File.Exists(filePath))
+            return NotFound("File not found on server");
+
+        var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+        return File(fileBytes, attachment.ContentType, attachment.FileName);
     }
 
     [HttpGet("test")]

@@ -10,5 +10,16 @@ namespace EmailAppBackend.DTOs
         public string RecipientEmail { get; set; } = string.Empty;
         public string Timestamp { get; set; } = string.Empty;
         public bool IsRead { get; set; }
+        public bool IsHighPriority { get; set; }
+        public List<AttachmentDto> Attachments { get; set; } = new List<AttachmentDto>();
+    }
+
+    public class AttachmentDto
+    {
+        public int Id { get; set; }
+        public string FileName { get; set; } = string.Empty;
+        public string ContentType { get; set; } = string.Empty;
+        public long FileSize { get; set; }
+        public string UploadedAt { get; set; } = string.Empty;
     }
 } 

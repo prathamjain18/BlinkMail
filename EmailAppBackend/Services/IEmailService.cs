@@ -15,4 +15,5 @@ public interface IEmailService
     Task<bool> MarkEmailAsReadAsync(int id);
     Task<bool> AddAttachmentAsync(int emailId, IFormFile file);
     Task<Attachment?> GetAttachmentAsync(int attachmentId);
+    string GetUploadsPath();
 } 

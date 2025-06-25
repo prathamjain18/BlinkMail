@@ -19,6 +19,8 @@ public class Email
     
     public bool IsDraft { get; set; }
     
+    public bool IsHighPriority { get; set; } = false;
+    
     public string? RecipientEmail { get; set; }
     
     // Foreign key properties for sender and recipient

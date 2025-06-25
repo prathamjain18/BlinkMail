@@ -1,7 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../utils/axios';
-import { PaperAirplaneIcon, DocumentDuplicateIcon } from '@heroicons/react/24/outline';
+import { PaperAirplaneIcon, DocumentDuplicateIcon, PaperClipIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+
+// Attachment interface
+interface Attachment {
+  id: number;
+  fileName: string;
+  contentType: string;
+  fileSize: number;
+  uploadedAt: string;
+}
 
 const Compose = () => {
   const navigate = useNavigate();
@@ -11,6 +20,7 @@ const Compose = () => {
     recipient: '',
     subject: '',
     body: '',
+    isHighPriority: false,
   });
   // State for loading indicator
   const [loading, setLoading] = useState(false);
@@ -18,6 +28,9 @@ const Compose = () => {
   const [error, setError] = useState('');
   // State for draft ID if editing an existing draft
   const [draftId, setDraftId] = useState<number | null>(null);
+  // State for attachments
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const [existingAttachments, setExistingAttachments] = useState<Attachment[]>([]);
 
   // Fetches a draft by ID and populates the form
   const fetchDraft = async (id: number) => {
@@ -28,8 +41,12 @@ const Compose = () => {
         recipient: draft.recipientEmail || draft.recipient?.email || '',
         subject: draft.subject || '',
         body: draft.body || '',
+        isHighPriority: draft.isHighPriority || false,
       });
       setDraftId(id);
+      if (draft.attachments) {
+        setExistingAttachments(draft.attachments);
+      }
     } catch (error) {
       console.error('Error fetching draft:', error);
       setError('Failed to load draft. Please try again.');
@@ -50,9 +67,37 @@ const Compose = () => {
         recipient: replyTo || '',
         subject: replySubject || '',
         body: replyBody || '',
+        isHighPriority: false,
       });
     }
   }, [location.search]);
+
+  // Handle file selection
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files);
+      setAttachments(prev => [...prev, ...newFiles]);
+    }
+  };
+
+  // Remove attachment
+  const removeAttachment = (index: number) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Remove existing attachment
+  const removeExistingAttachment = (attachmentId: number) => {
+    setExistingAttachments(prev => prev.filter(a => a.id !== attachmentId));
+  };
+
+  // Format file size
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
 
   // Handles sending the email (or updating a draft)
   const handleSubmit = async (e: React.FormEvent) => {
@@ -75,15 +120,32 @@ const Compose = () => {
         senderId: parseInt(userId || '0'),
         recipientEmail: formData.recipient.trim().toLowerCase(),
         isDraft: false,
+        isHighPriority: formData.isHighPriority,
       };
+
+      let emailId: number;
 
       if (draftId) {
         // Update existing draft and send
-        await api.put(`/email/${draftId}`, { ...emailData, id: draftId });
+        const response = await api.put(`/email/${draftId}`, { ...emailData, id: draftId });
+        emailId = draftId;
       } else {
         // Send new email
-        await api.post('/email/send', emailData);
+        const response = await api.post('/email/send', emailData);
+        emailId = response.data.id;
       }
+
+      // Upload attachments
+      for (const file of attachments) {
+        const formData = new FormData();
+        formData.append('file', file);
+        await api.post(`/email/${emailId}/attachments`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      }
+
       navigate('/sent');
     } catch (err: any) {
       console.error('Error sending email:', err);
@@ -117,15 +179,32 @@ const Compose = () => {
         senderId: parseInt(userId || '0'),
         recipientEmail: formData.recipient.trim().toLowerCase(),
         isDraft: true,
+        isHighPriority: formData.isHighPriority,
       };
+
+      let emailId: number;
 
       if (draftId) {
         // Update existing draft
         await api.put(`/email/${draftId}`, draftData);
+        emailId = draftId;
       } else {
         // Save new draft
-        await api.post('/email/draft', draftData);
+        const response = await api.post('/email/draft', draftData);
+        emailId = response.data.id;
       }
+
+      // Upload attachments
+      for (const file of attachments) {
+        const formData = new FormData();
+        formData.append('file', file);
+        await api.post(`/email/${emailId}/attachments`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      }
+
       navigate('/drafts');
     } catch (err: any) {
       console.error('Error saving draft:', err);
@@ -178,6 +257,21 @@ const Compose = () => {
               />
             </div>
 
+            <div className="flex items-center space-x-4">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  className="rounded border-gray-300 text-primary focus:ring-primary"
+                  checked={formData.isHighPriority}
+                  onChange={(e) => setFormData({ ...formData, isHighPriority: e.target.checked })}
+                />
+                <span className="ml-2 text-sm text-text-light dark:text-text-dark flex items-center">
+                  <ExclamationTriangleIcon className="h-4 w-4 text-orange-500 mr-1" />
+                  High Priority
+                </span>
+              </label>
+            </div>
+
             <div>
               <label htmlFor="body" className="block text-sm font-medium text-text-light dark:text-text-dark">
                 Message
@@ -190,6 +284,63 @@ const Compose = () => {
                 value={formData.body}
                 onChange={(e) => setFormData({ ...formData, body: e.target.value })}
               />
+            </div>
+
+            {/* File Upload Section */}
+            <div>
+              <label className="block text-sm font-medium text-text-light dark:text-text-dark mb-2">
+                Attachments
+              </label>
+              <div className="flex items-center space-x-2">
+                <label className="cursor-pointer inline-flex items-center gap-1 px-4 py-2 rounded-md bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-surface-dark dark:text-text-dark dark:hover:bg-surface-light focus:outline-none focus:ring-2 focus:ring-primary text-sm font-medium shadow transition-colors">
+                  <PaperClipIcon className="h-5 w-5" />
+                  Add Files
+                  <input
+                    type="file"
+                    multiple
+                    className="hidden"
+                    onChange={handleFileSelect}
+                  />
+                </label>
+              </div>
+
+              {/* New Attachments List */}
+              {attachments.length > 0 && (
+                <div className="mt-3 space-y-2">
+                  <h4 className="text-sm font-medium text-text-light dark:text-text-dark">New Attachments:</h4>
+                  {attachments.map((file, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                      <span className="text-sm text-text-light dark:text-text-dark">{file.name} ({formatFileSize(file.size)})</span>
+                      <button
+                        type="button"
+                        onClick={() => removeAttachment(index)}
+                        className="text-red-500 hover:text-red-700 text-sm"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Existing Attachments List */}
+              {existingAttachments.length > 0 && (
+                <div className="mt-3 space-y-2">
+                  <h4 className="text-sm font-medium text-text-light dark:text-text-dark">Existing Attachments:</h4>
+                  {existingAttachments.map((attachment) => (
+                    <div key={attachment.id} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                      <span className="text-sm text-text-light dark:text-text-dark">{attachment.fileName} ({formatFileSize(attachment.fileSize)})</span>
+                      <button
+                        type="button"
+                        onClick={() => removeExistingAttachment(attachment.id)}
+                        className="text-red-500 hover:text-red-700 text-sm"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="flex justify-end space-x-3">
