@@ -18,9 +18,18 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("https://blinkmail-frontend.onrender.com")
+        policy.WithOrigins(
+                "https://blinkmail-frontend.onrender.com",
+                "http://localhost:3000",
+                "http://localhost:5173",
+                "https://localhost:3000",
+                "https://localhost:5173"
+              )
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials()
+              .WithExposedHeaders("Content-Disposition", "Content-Length", "Content-Type")
+              .SetPreflightMaxAge(TimeSpan.FromHours(1));
     });
 });
 // Register services
@@ -130,7 +139,9 @@ app.UseStaticFiles();
 // }
 app.UseHttpsRedirection();
 
+// Apply CORS before authentication and authorization
 app.UseCors("AllowFrontend");
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

@@ -1,5 +1,170 @@
 {
   "Version": 1,
   "ManifestType": "Build",
-  "Endpoints": []
+  "Endpoints": [
+    {
+      "Route": "uploads/6d61b181-edc0-4897-b0d3-b552ca762dc0_Black & White Modern Business LinkedIn Banner.k5jz5jot93.png",
+      "AssetFile": "uploads/6d61b181-edc0-4897-b0d3-b552ca762dc0_Black & White Modern Business LinkedIn Banner.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1075131"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"SKOgIZpttiK19nkfFUyTsOGFl6vdqIBgN1t8PQXbLBs=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 25 Jun 2025 00:28:38 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "k5jz5jot93"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-SKOgIZpttiK19nkfFUyTsOGFl6vdqIBgN1t8PQXbLBs="
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/6d61b181-edc0-4897-b0d3-b552ca762dc0_Black & White Modern Business LinkedIn Banner.png"
+        }
+      ]
+    },
+    {
+      "Route": "uploads/6d61b181-edc0-4897-b0d3-b552ca762dc0_Black & White Modern Business LinkedIn Banner.png",
+      "AssetFile": "uploads/6d61b181-edc0-4897-b0d3-b552ca762dc0_Black & White Modern Business LinkedIn Banner.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1075131"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"SKOgIZpttiK19nkfFUyTsOGFl6vdqIBgN1t8PQXbLBs=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 25 Jun 2025 00:28:38 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-SKOgIZpttiK19nkfFUyTsOGFl6vdqIBgN1t8PQXbLBs="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/92a11904-dae2-4b10-87b1-329a8eb65b67_Add a heading (4).ikf37262ur.png",
+      "AssetFile": "uploads/92a11904-dae2-4b10-87b1-329a8eb65b67_Add a heading (4).png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2316717"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"bv8zapLJa7Op1mumnVoEujFmxVcD6h1yXLQAgkLdKAY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 25 Jun 2025 00:27:17 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ikf37262ur"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-bv8zapLJa7Op1mumnVoEujFmxVcD6h1yXLQAgkLdKAY="
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/92a11904-dae2-4b10-87b1-329a8eb65b67_Add a heading (4).png"
+        }
+      ]
+    },
+    {
+      "Route": "uploads/92a11904-dae2-4b10-87b1-329a8eb65b67_Add a heading (4).png",
+      "AssetFile": "uploads/92a11904-dae2-4b10-87b1-329a8eb65b67_Add a heading (4).png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2316717"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"bv8zapLJa7Op1mumnVoEujFmxVcD6h1yXLQAgkLdKAY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 25 Jun 2025 00:27:17 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-bv8zapLJa7Op1mumnVoEujFmxVcD6h1yXLQAgkLdKAY="
+        }
+      ]
+    }
+  ]
 }

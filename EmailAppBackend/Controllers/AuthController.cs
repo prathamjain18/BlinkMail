@@ -50,16 +50,20 @@ namespace EmailAppBackend.Controllers
         {
             try
             {
+                Console.WriteLine($"[AUTH] Register attempt for email: {dto?.Email}");
                 var token = await _authService.RegisterAsync(dto);
                 var user = await _authService.GetUserByEmailAsync(dto.Email);
+                Console.WriteLine($"[AUTH] Register successful for user: {user?.Email}");
                 return Ok(new { token, userId = user?.Id, email = user?.Email, firstName = user?.FirstName, lastName = user?.LastName });
             }
             catch (ArgumentException ex)
             {
+                Console.WriteLine($"[AUTH] Register failed - ArgumentException: {ex.Message}");
                 return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"[AUTH] Register failed - Exception: {ex.Message}");
                 return StatusCode(500, new { message = ex.Message });
             }
         }
@@ -68,15 +72,36 @@ namespace EmailAppBackend.Controllers
         // Authenticates a user and returns a JWT token
         public async Task<IActionResult> Login(LoginDto dto)
         {
-            var token = await _authService.LoginAsync(dto);
-            var user = await _authService.GetUserByEmailAsync(dto.Email);
-            return Ok(new { token, userId = user?.Id, email = user?.Email, firstName = user?.FirstName, lastName = user?.LastName });
+            try
+            {
+                Console.WriteLine($"[AUTH] Login attempt for email: {dto?.Email}");
+                var token = await _authService.LoginAsync(dto);
+                var user = await _authService.GetUserByEmailAsync(dto.Email);
+                Console.WriteLine($"[AUTH] Login successful for user: {user?.Email}");
+                return Ok(new { token, userId = user?.Id, email = user?.Email, firstName = user?.FirstName, lastName = user?.LastName });
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine($"[AUTH] Login failed - ArgumentException: {ex.Message}");
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AUTH] Login failed - Exception: {ex.Message}");
+                return StatusCode(500, new { message = ex.Message });
+            }
         }
 
         [HttpGet("login")]
         public IActionResult LoginGet()
         {
             return Ok(new { message = "Auth API is running. Use POST to login." });
+        }
+
+        [HttpGet("test-cors")]
+        public IActionResult TestCors()
+        {
+            return Ok(new { message = "CORS is working!", timestamp = DateTime.UtcNow });
         }
     }
 }
