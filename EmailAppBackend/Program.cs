@@ -7,6 +7,7 @@ using System.Text;
 using EmailAppBackend.Services;
 using EmailAppBackend.Data;
 using BCrypt.Net;
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,6 +72,8 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
+        var dbPath = Path.GetFullPath(context.Database.GetDbConnection().DataSource);
+        Console.WriteLine($"[DB] Using SQLite database at: {dbPath}");
         Console.WriteLine("Attempting to connect to database...");
         context.Database.EnsureCreated();
         Console.WriteLine("Database connection successful!");
