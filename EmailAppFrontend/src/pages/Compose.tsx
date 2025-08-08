@@ -34,7 +34,7 @@ const Compose = () => {
   // State for autosave
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const autosaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const autosaveTimerRef = useRef<number | null>(null);
 
   // Autosave function
   const autosaveDraft = async () => {
@@ -76,7 +76,7 @@ const Compose = () => {
       if (autosaveTimerRef.current) {
         clearTimeout(autosaveTimerRef.current);
       }
-      autosaveTimerRef.current = setTimeout(autosaveDraft, 30000); // 30 seconds
+      autosaveTimerRef.current = window.setTimeout(autosaveDraft, 30000); // 30 seconds
     };
 
     // Start timer when form data changes

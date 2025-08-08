@@ -8,8 +8,12 @@ using EmailAppBackend.Services;
 using EmailAppBackend.Data;
 using BCrypt.Net;
 using System.IO;
+using SQLitePCL;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Ensure SQLCipher (encrypted SQLite) is initialized
+Batteries_V2.Init();
 
 // Add services to the container
 builder.Services.AddControllers();
@@ -37,7 +41,6 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddSingleton<EncryptedDatabaseService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -45,12 +48,10 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 
-// Configure encrypted database
-var encryptedDbService = new EncryptedDatabaseService(builder.Configuration);
-encryptedDbService.InitializeEncryptedDatabase();
-
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(encryptedDbService.GetEncryptedConnectionString())
+    options.UseSqlite(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+    )
 );
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
