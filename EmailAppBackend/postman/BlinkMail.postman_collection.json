@@ -1,0 +1,83 @@
+{
+  "info": {
+    "_postman_id": "blinkmail-collection-001",
+    "name": "BlinkMail Core Features",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Save Draft",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "url": {"raw": "{{baseUrl}}/api/email/draft", "host": ["{{baseUrl}}"], "path": ["api", "email", "draft"]},
+        "body": {
+          "mode": "raw",
+          "raw": "{\"subject\":\"Test Draft\",\"body\":\"This is a test draft.\"}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status code is 200', function () {",
+            "    pm.response.to.have.status(200);",
+            "});",
+            "pm.test('Response has draft id', function () {",
+            "    var json = pm.response.json();",
+            "    pm.expect(json).to.have.property('id');",
+            "});"
+          ],
+          "type": "text/javascript"
+        }
+      }]
+    },
+    {
+      "name": "Inbox Sync",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {"raw": "{{baseUrl}}/api/email/inbox", "host": ["{{baseUrl}}"], "path": ["api", "email", "inbox"]}
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status code is 200', function () {",
+            "    pm.response.to.have.status(200);",
+            "});",
+            "pm.test('Inbox is an array', function () {",
+            "    var json = pm.response.json();",
+            "    pm.expect(json).to.be.an('array');",
+            "});"
+          ],
+          "type": "text/javascript"
+        }
+      }]
+    },
+    {
+      "name": "Thread Handling",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {"raw": "{{baseUrl}}/api/email/thread/1", "host": ["{{baseUrl}}"], "path": ["api", "email", "thread", "1"]}
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status code is 200', function () {",
+            "    pm.response.to.have.status(200);",
+            "});",
+            "pm.test('Thread contains messages', function () {",
+            "    var json = pm.response.json();",
+            "    pm.expect(json).to.have.property('messages');",
+            "    pm.expect(json.messages).to.be.an('array');",
+            "});"
+          ],
+          "type": "text/javascript"
+        }
+      }]
+    }
+  ]
+} 

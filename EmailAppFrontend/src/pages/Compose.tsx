@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../utils/axios';
 import { PaperAirplaneIcon, DocumentDuplicateIcon, PaperClipIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
@@ -31,6 +31,74 @@ const Compose = () => {
   // State for attachments
   const [attachments, setAttachments] = useState<File[]>([]);
   const [existingAttachments, setExistingAttachments] = useState<Attachment[]>([]);
+  // State for autosave
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const autosaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Autosave function
+  const autosaveDraft = async () => {
+    if (!formData.recipient || (!formData.subject && !formData.body)) {
+      return; // Don't save empty drafts
+    }
+
+    setIsSaving(true);
+    try {
+      const userId = localStorage.getItem('userId');
+      const draftData = {
+        subject: formData.subject || '(No Subject)',
+        body: formData.body || '(No Content)',
+        senderId: parseInt(userId || '0'),
+        recipientEmail: formData.recipient.trim().toLowerCase(),
+        isDraft: true,
+        isHighPriority: formData.isHighPriority,
+      };
+
+      if (draftId) {
+        // Update existing draft
+        await api.put(`/email/${draftId}`, { ...draftData, id: draftId });
+      } else {
+        // Save new draft
+        const response = await api.post('/email/draft', draftData);
+        setDraftId(response.data.id);
+      }
+      setLastSaved(new Date());
+    } catch (error) {
+      console.error('Autosave failed:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Setup autosave timer
+  useEffect(() => {
+    const startAutosaveTimer = () => {
+      if (autosaveTimerRef.current) {
+        clearTimeout(autosaveTimerRef.current);
+      }
+      autosaveTimerRef.current = setTimeout(autosaveDraft, 30000); // 30 seconds
+    };
+
+    // Start timer when form data changes
+    if (formData.recipient || formData.subject || formData.body) {
+      startAutosaveTimer();
+    }
+
+    return () => {
+      if (autosaveTimerRef.current) {
+        clearTimeout(autosaveTimerRef.current);
+      }
+    };
+  }, [formData.recipient, formData.subject, formData.body, formData.isHighPriority]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (autosaveTimerRef.current) {
+        clearTimeout(autosaveTimerRef.current);
+      }
+    };
+  }, []);
 
   // Fetches a draft by ID and populates the form
   const fetchDraft = async (id: number) => {
@@ -223,7 +291,19 @@ const Compose = () => {
     <div className="max-w-4xl mx-auto p-6">
       <div className="card">
         <div className="px-4 py-5 sm:p-6">
-          <h2 className="text-lg font-medium text-text-light dark:text-text-dark mb-4">Compose Email</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-medium text-text-light dark:text-text-dark">Compose Email</h2>
+            <div className="flex items-center space-x-2">
+              {isSaving && (
+                <span className="text-sm text-blue-600 dark:text-blue-400">Saving...</span>
+              )}
+              {lastSaved && !isSaving && (
+                <span className="text-sm text-green-600 dark:text-green-400">
+                  Saved {lastSaved.toLocaleTimeString()}
+                </span>
+              )}
+            </div>
+          </div>
           {error && (
             <div className="mb-4 rounded-md bg-red-50 dark:bg-red-900 p-4">
               <div className="text-sm text-red-700 dark:text-red-200">{error}</div>

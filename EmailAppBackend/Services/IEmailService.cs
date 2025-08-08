@@ -6,7 +6,7 @@ public interface IEmailService
 {
     Task<Email> SendEmailAsync(Email email);
     Task<Email?> GetEmailByIdAsync(int id);
-    Task<IEnumerable<Email>> GetInboxEmailsAsync(int userId, string? userEmail = null);
+    Task<IEnumerable<Email>> GetInboxEmailsAsync(int userId, string? userEmail = null, string? search = null, bool? isRead = null, bool? isHighPriority = null);
     Task<IEnumerable<Email>> GetSentEmailsAsync(int userId);
     Task<IEnumerable<Email>> GetDraftEmailsAsync(int userId, string? userEmail = null);
     Task<Email> SaveDraftAsync(Email email);

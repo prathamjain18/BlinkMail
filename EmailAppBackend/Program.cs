@@ -37,15 +37,20 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddSingleton<EncryptedDatabaseService>();
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
+
+// Configure encrypted database
+var encryptedDbService = new EncryptedDatabaseService(builder.Configuration);
+encryptedDbService.InitializeEncryptedDatabase();
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-    )
+    options.UseSqlite(encryptedDbService.GetEncryptedConnectionString())
 );
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>

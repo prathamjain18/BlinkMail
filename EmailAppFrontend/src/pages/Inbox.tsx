@@ -33,16 +33,37 @@ const Inbox = () => {
   const [loading, setLoading] = useState(true);
   // State for the currently selected email
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
+  // State for filters
+  const [filters, setFilters] = useState({
+    search: '',
+    isRead: null as boolean | null,
+    isHighPriority: null as boolean | null,
+  });
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
-  // Fetch emails on component mount
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(filters.search);
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(timer);
+  }, [filters.search]);
+
+  // Fetch emails on component mount and when filters change
   useEffect(() => {
     fetchEmails();
-  }, []);
+  }, [debouncedSearch, filters.isRead, filters.isHighPriority]);
 
-  // Fetches inbox emails from the backend
+  // Fetches inbox emails from the backend with filters
   const fetchEmails = async () => {
     try {
-      const response = await api.get('/email/inbox');
+      const params = new URLSearchParams();
+      if (debouncedSearch) params.append('search', debouncedSearch);
+      if (filters.isRead !== null) params.append('isRead', filters.isRead.toString());
+      if (filters.isHighPriority !== null) params.append('isHighPriority', filters.isHighPriority.toString());
+
+      const response = await api.get(`/email/inbox?${params.toString()}`);
       setEmails(response.data);
     } catch (error) {
       console.error('Error fetching emails:', error);
@@ -113,7 +134,51 @@ const Inbox = () => {
       {/* Email List Sidebar */}
       <div className="w-1/3 border-r border-border-light dark:border-border-dark overflow-y-auto card">
         <div className="p-4">
-          <h2 className="text-lg font-medium text-text-light dark:text-text-dark">Inbox</h2>
+          <h2 className="text-lg font-medium text-text-light dark:text-text-dark mb-4">Inbox</h2>
+          
+          {/* Filter Controls */}
+          <div className="space-y-4 mb-4">
+            {/* Search */}
+            <div>
+              <input
+                type="text"
+                placeholder="Search emails..."
+                value={filters.search}
+                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                className="input w-full rounded-md shadow-sm focus:border-primary focus:ring-primary sm:text-sm placeholder-text-secondary-light dark:placeholder-text-secondary-dark"
+              />
+            </div>
+            
+            {/* Filter Buttons */}
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setFilters({ ...filters, isRead: filters.isRead === false ? null : false })}
+                className={`px-3 py-1 text-sm rounded-md ${
+                  filters.isRead === false 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                }`}
+              >
+                Unread Only
+              </button>
+              <button
+                onClick={() => setFilters({ ...filters, isHighPriority: filters.isHighPriority === true ? null : true })}
+                className={`px-3 py-1 text-sm rounded-md ${
+                  filters.isHighPriority === true 
+                    ? 'bg-orange-500 text-white' 
+                    : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                }`}
+              >
+                High Priority
+              </button>
+              <button
+                onClick={() => setFilters({ search: '', isRead: null, isHighPriority: null })}
+                className="px-3 py-1 text-sm rounded-md bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+              >
+                Clear Filters
+              </button>
+            </div>
+          </div>
         </div>
         {loading ? (
           <div className="p-4 text-center">Loading...</div>

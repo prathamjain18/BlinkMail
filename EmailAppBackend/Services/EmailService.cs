@@ -52,14 +52,37 @@ public class EmailService : IEmailService
             .FirstOrDefaultAsync(e => e.Id == id);
     }
 
-    public async Task<IEnumerable<Email>> GetInboxEmailsAsync(int userId, string? userEmail = null)
+    public async Task<IEnumerable<Email>> GetInboxEmailsAsync(int userId, string? userEmail = null, string? search = null, bool? isRead = null, bool? isHighPriority = null)
     {
-        return await _context.Emails
+        var query = _context.Emails
             .Include(e => e.Sender)
             .Include(e => e.Attachments)
-            .Where(e => (e.RecipientId == userId || (userEmail != null && e.RecipientEmail == userEmail)) && !e.IsDraft)
-            .OrderByDescending(e => e.SentAt)
-            .ToListAsync();
+            .Where(e => (e.RecipientId == userId || (userEmail != null && e.RecipientEmail == userEmail)) && !e.IsDraft);
+
+        // Apply search filter
+        if (!string.IsNullOrEmpty(search))
+        {
+            var searchLower = search.ToLower();
+            query = query.Where(e => 
+                e.Subject.ToLower().Contains(searchLower) || 
+                e.Body.ToLower().Contains(searchLower) ||
+                e.Sender.Email.ToLower().Contains(searchLower) ||
+                e.RecipientEmail.ToLower().Contains(searchLower));
+        }
+
+        // Apply read status filter
+        if (isRead.HasValue)
+        {
+            query = query.Where(e => e.IsRead == isRead.Value);
+        }
+
+        // Apply priority filter
+        if (isHighPriority.HasValue)
+        {
+            query = query.Where(e => e.IsHighPriority == isHighPriority.Value);
+        }
+
+        return await query.OrderByDescending(e => e.SentAt).ToListAsync();
     }
 
     public async Task<IEnumerable<Email>> GetSentEmailsAsync(int userId)

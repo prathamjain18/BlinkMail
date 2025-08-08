@@ -87,11 +87,14 @@ public class EmailController : ControllerBase
     }
 
     [HttpGet("inbox")]
-    public async Task<ActionResult<IEnumerable<EmailAppBackend.DTOs.EmailDto>>> GetInbox()
+    public async Task<ActionResult<IEnumerable<EmailAppBackend.DTOs.EmailDto>>> GetInbox(
+        [FromQuery] string? search = null,
+        [FromQuery] bool? isRead = null,
+        [FromQuery] bool? isHighPriority = null)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
         var userEmail = User.FindFirst("email")?.Value;
-        var emails = await _emailService.GetInboxEmailsAsync(userId, userEmail);
+        var emails = await _emailService.GetInboxEmailsAsync(userId, userEmail, search, isRead, isHighPriority);
         return Ok(emails.Select(MapToDto));
     }
 

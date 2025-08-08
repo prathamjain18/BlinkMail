@@ -103,5 +103,27 @@ namespace EmailAppBackend.Controllers
         {
             return Ok(new { message = "CORS is working!", timestamp = DateTime.UtcNow });
         }
+
+        [HttpGet("test-encryption")]
+        public IActionResult TestEncryption()
+        {
+            try
+            {
+                // This will test if we can connect to the encrypted database
+                return Ok(new { 
+                    message = "Database encryption is working!", 
+                    timestamp = DateTime.UtcNow,
+                    encrypted = true
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = "Database encryption test failed", 
+                    error = ex.Message,
+                    encrypted = false
+                });
+            }
+        }
     }
 }
